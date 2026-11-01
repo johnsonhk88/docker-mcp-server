@@ -1,0 +1,127 @@
+{
+  "info": {
+    "name": "Docker MCP Gateway",
+    "description": "Streamable HTTP checks against the local MCP gateway. Set collection variable token to MCP_GATEWAY_AUTH_TOKEN. Run Initialize before other /mcp requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8811"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "sessionId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "Initialize",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const sid = pm.response.headers.get('Mcp-Session-Id');",
+              "if (sid) { pm.collectionVariables.set('sessionId', sid); }"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json, text/event-stream" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"initialize\",\n  \"params\": {\n    \"protocolVersion\": \"2024-11-05\",\n    \"capabilities\": {},\n    \"clientInfo\": { \"name\": \"postman\", \"version\": \"0\" }\n  }\n}"
+        },
+        "url": "{{baseUrl}}/mcp"
+      }
+    },
+    {
+      "name": "List tools",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json, text/event-stream" },
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Mcp-Session-Id", "value": "{{sessionId}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 2,\n  \"method\": \"tools/list\"\n}"
+        },
+        "url": "{{baseUrl}}/mcp"
+      }
+    },
+    {
+      "name": "Search (DuckDuckGo)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json, text/event-stream" },
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Mcp-Session-Id", "value": "{{sessionId}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 3,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"search\",\n    \"arguments\": { \"query\": \"MCP streamable HTTP\", \"max_results\": 3 }\n  }\n}"
+        },
+        "url": "{{baseUrl}}/mcp"
+      }
+    },
+    {
+      "name": "Fetch URL",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json, text/event-stream" },
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Mcp-Session-Id", "value": "{{sessionId}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 4,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"fetch\",\n    \"arguments\": { \"url\": \"https://example.com\" }\n  }\n}"
+        },
+        "url": "{{baseUrl}}/mcp"
+      }
+    },
+    {
+      "name": "Postman getAuthenticatedUser",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json, text/event-stream" },
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Mcp-Session-Id", "value": "{{sessionId}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 5,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"getAuthenticatedUser\",\n    \"arguments\": {}\n  }\n}"
+        },
+        "url": "{{baseUrl}}/mcp"
+      }
+    }
+  ]
+}

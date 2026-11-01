@@ -38,6 +38,36 @@ class ComposeContractTests(unittest.TestCase):
     def test_readme_keeps_remote_oauth_disabled(self) -> None:
         text = (ROOT / "README.md").read_text(encoding="utf-8")
         self.assertIn("oauth: false", text)
+        self.assertIn("docs/usage.md", text)
+        self.assertIn("docs/api-testing.md", text)
+        self.assertIn("docs/postman.md", text)
+
+    def test_usage_doc_covers_compose_and_opencode(self) -> None:
+        text = (ROOT / "docs/usage.md").read_text(encoding="utf-8")
+        self.assertIn("docker compose up -d", text)
+        self.assertIn("export MCP_GATEWAY_AUTH_TOKEN", text)
+        self.assertIn("opencode mcp list", text)
+        self.assertIn("postman.postman-api-key", text)
+
+    def test_api_testing_doc_covers_mcp_jsonrpc(self) -> None:
+        text = (ROOT / "docs/api-testing.md").read_text(encoding="utf-8")
+        self.assertIn("/health", text)
+        self.assertIn("Mcp-Session-Id", text)
+        self.assertIn("tools/list", text)
+        self.assertIn("tools/call", text)
+        self.assertIn("Authorization: Bearer", text)
+
+    def test_postman_collection_can_be_imported(self) -> None:
+        text = (ROOT / "docs/postman.md").read_text(encoding="utf-8")
+        self.assertIn("mcp-gateway.postman_collection.json", text)
+        self.assertIn("oauth: false", text)
+        collection = (ROOT / "docs/postman/mcp-gateway.postman_collection.json").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("http://127.0.0.1:8811", collection)
+        self.assertIn("/mcp", collection)
+        self.assertIn("Mcp-Session-Id", collection)
+        self.assertIn("tools/list", collection)
 
     def test_opencode_config_uses_remote_bearer(self) -> None:
         text = (ROOT / "opencode.jsonc").read_text(encoding="utf-8")

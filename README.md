@@ -4,6 +4,12 @@ Run Docker catalog MCP servers behind one Streamable HTTP endpoint so OpenCode c
 
 v1 servers: **Postman**, **DuckDuckGo** (search), **Fetch** (page to markdown).
 
+## Docs
+
+- [Step-by-step usage](docs/usage.md) — `.env`, Compose, OpenCode, catalog tools
+- [Test with curl / HTTP API](docs/api-testing.md) — health, initialize, `tools/list`, `tools/call`
+- [Test with Postman](docs/postman.md) — import `docs/postman/mcp-gateway.postman_collection.json`
+
 ## Requirements
 
 - Docker Engine with Compose
