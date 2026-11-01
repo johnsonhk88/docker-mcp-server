@@ -1,0 +1,29 @@
+services:
+  gateway:
+    image: docker/mcp-gateway
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8811:8811"
+    environment:
+      DOCKER_MCP_IN_CONTAINER: "1"
+      MCP_GATEWAY_AUTH_TOKEN: ${MCP_GATEWAY_AUTH_TOKEN}
+    command:
+      - --transport=streaming
+      - --port=8811
+      - --servers=postman,duckduckgo,fetch
+      - --secrets=/run/secrets/mcp_secrets
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    secrets:
+      - mcp_secrets
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8811/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 15s
+
+secrets:
+  mcp_secrets:
+    file: .env
