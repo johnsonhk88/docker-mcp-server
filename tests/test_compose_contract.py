@@ -28,9 +28,16 @@ class ComposeContractTests(unittest.TestCase):
         self.assertIn("--servers=postman,duckduckgo,fetch", text)
         self.assertIn("127.0.0.1:8811:8811", text)
         self.assertIn("/var/run/docker.sock:/var/run/docker.sock", text)
-        self.assertIn("MCP_GATEWAY_AUTH_TOKEN", text)
+        self.assertIn("MCP_GATEWAY_AUTH_TOKEN: ${MCP_GATEWAY_AUTH_TOKEN:?", text)
         self.assertIn("DOCKER_MCP_IN_CONTAINER", text)
         self.assertIn("--secrets=/run/secrets/mcp_secrets", text)
+        self.assertIn("file: .env", text)
+        self.assertNotIn("--allow-unauthenticated", text)
+        self.assertNotIn("0.0.0.0", text)
+
+    def test_readme_keeps_remote_oauth_disabled(self) -> None:
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("oauth: false", text)
 
     def test_opencode_config_uses_remote_bearer(self) -> None:
         text = (ROOT / "opencode.jsonc").read_text(encoding="utf-8")

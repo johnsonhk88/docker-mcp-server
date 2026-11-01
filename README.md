@@ -54,13 +54,27 @@ opencode mcp list
 
 You want `docker-gateway` **connected**. If it is not, confirm Compose is up and the exported token matches `.env`.
 
-To add the server globally instead:
+To add the server globally, put this in `~/.config/opencode/opencode.jsonc` (keep `oauth: false` — OpenCode otherwise tries OAuth on remote servers):
 
-```sh
-opencode mcp add docker-gateway --global --url http://127.0.0.1:8811/mcp --header 'Authorization=Bearer {env:MCP_GATEWAY_AUTH_TOKEN}'
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "docker-gateway": {
+        "type": "remote",
+        "url": "http://127.0.0.1:8811/mcp",
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {env:MCP_GATEWAY_AUTH_TOKEN}"
+        }
+      }
+    }
+  }
+}
 ```
 
-Remote OAuth is off; this gateway uses the Bearer token, not Postman OAuth.
+This gateway uses the Bearer token, not Postman OAuth.
 
 ## Add another catalog server
 

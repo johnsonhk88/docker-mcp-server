@@ -7,7 +7,7 @@ services:
       - "127.0.0.1:8811:8811"
     environment:
       DOCKER_MCP_IN_CONTAINER: "1"
-      MCP_GATEWAY_AUTH_TOKEN: ${MCP_GATEWAY_AUTH_TOKEN}
+      MCP_GATEWAY_AUTH_TOKEN: ${MCP_GATEWAY_AUTH_TOKEN:?Set MCP_GATEWAY_AUTH_TOKEN in .env}
     command:
       - --transport=streaming
       - --port=8811
