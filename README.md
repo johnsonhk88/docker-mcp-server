@@ -7,6 +7,7 @@ v1 servers: **Postman**, **DuckDuckGo** (search), **Fetch** (page to markdown).
 ## Docs
 
 - [Step-by-step usage](docs/usage.md) — `.env`, Compose, OpenCode, catalog tools
+- [Set up OpenCode](docs/opencode.md) — MCP client config, token export, local vs remote servers
 - [Test with curl / HTTP API](docs/api-testing.md) — health, initialize, `tools/list`, `tools/call`
 - [Test with Postman](docs/postman.md) — import `docs/postman/mcp-gateway.postman_collection.json`
 
@@ -46,41 +47,18 @@ The published port is bound to `127.0.0.1` only.
 
 ## OpenCode
 
+Full walkthrough: [Set up OpenCode](docs/opencode.md).
+
 This repo includes `opencode.jsonc`. OpenCode reads `{env:MCP_GATEWAY_AUTH_TOKEN}` from **your shell environment**, not from `.env`.
 
 ```bash
 export MCP_GATEWAY_AUTH_TOKEN='the-same-token-as-in-.env'
-```
-
-Then start OpenCode in this directory, or copy the `mcp.servers.docker-gateway` block into `~/.config/opencode/opencode.jsonc`.
-
-```sh
 opencode mcp list
 ```
 
-You want `docker-gateway` **connected**. If it is not, confirm Compose is up and the exported token matches `.env`.
+You want `docker-gateway` **connected**. Keep `oauth: false` — this gateway uses a Bearer token, not OAuth.
 
-To add the server globally, put this in `~/.config/opencode/opencode.jsonc` (keep `oauth: false` — OpenCode otherwise tries OAuth on remote servers):
-
-```jsonc
-{
-  "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "servers": {
-      "docker-gateway": {
-        "type": "remote",
-        "url": "http://127.0.0.1:8811/mcp",
-        "oauth": false,
-        "headers": {
-          "Authorization": "Bearer {env:MCP_GATEWAY_AUTH_TOKEN}"
-        }
-      }
-    }
-  }
-}
-```
-
-This gateway uses the Bearer token, not Postman OAuth.
+To use it from every project, copy the `mcp.servers.docker-gateway` block into `~/.config/opencode/opencode.jsonc`.
 
 ## Add another catalog server
 

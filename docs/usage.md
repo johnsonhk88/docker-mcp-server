@@ -51,6 +51,8 @@ docker compose up -d --force-recreate
 
 ## 4. Connect OpenCode
 
+Full walkthrough (project config, global config, CLI, other MCP servers): [Set up OpenCode](opencode.md).
+
 OpenCode does **not** read Compose `.env`. Export the same token in the shell that starts OpenCode:
 
 ```bash
@@ -64,8 +66,6 @@ opencode mcp list
 ```
 
 You want `docker-gateway` **connected**. Keep `oauth: false` in that config. The gateway uses a Bearer token, not OAuth.
-
-To use the gateway from every project, copy the `mcp.servers.docker-gateway` block into `~/.config/opencode/opencode.jsonc`. See the README for the full snippet.
 
 ## 5. What you can call
 
@@ -102,5 +102,6 @@ docker compose down
 
 ## Next
 
+- [Set up OpenCode](opencode.md)
 - [Test with curl / HTTP API](api-testing.md)
 - [Test with the Postman app](postman.md)
