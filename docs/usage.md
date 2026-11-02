@@ -67,6 +67,8 @@ opencode mcp list
 
 You want `docker-gateway` **connected**. Keep `oauth: false` in that config. The gateway uses a Bearer token, not OAuth.
 
+If `mcp list` shows **Unauthorized (HTTP 401)**, see [Fix HTTP 401 Unauthorized](opencode.md#fix-http-401-unauthorized).
+
 ## 5. What you can call
 
 The gateway exposes one MCP endpoint. Behind it:

@@ -8,6 +8,7 @@ v1 servers: **Postman**, **DuckDuckGo** (search), **Fetch** (page to markdown).
 
 - [Step-by-step usage](docs/usage.md) — `.env`, Compose, OpenCode, catalog tools
 - [Set up OpenCode](docs/opencode.md) — MCP client config, token export, local vs remote servers
+- [Fix HTTP 401 Unauthorized](docs/opencode.md#fix-http-401-unauthorized) — `docker-gateway` Error POSTing to endpoint
 - [Test with curl / HTTP API](docs/api-testing.md) — health, initialize, `tools/list`, `tools/call`
 - [Test with Postman](docs/postman.md) — import `docs/postman/mcp-gateway.postman_collection.json`
 
@@ -57,6 +58,8 @@ opencode mcp list
 ```
 
 You want `docker-gateway` **connected**. Keep `oauth: false` — this gateway uses a Bearer token, not OAuth.
+
+If you see **Error POSTing to endpoint: Unauthorized (HTTP 401)**, see [Fix HTTP 401 Unauthorized](docs/opencode.md#fix-http-401-unauthorized).
 
 To use it from every project, copy the `mcp.servers.docker-gateway` block into `~/.config/opencode/opencode.jsonc`.
 

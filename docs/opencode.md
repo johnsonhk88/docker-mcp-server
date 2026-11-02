@@ -61,11 +61,7 @@ opencode mcp list
 
 You want `docker-gateway` **connected**. In OpenCode, `/mcps` also lists servers and lets you connect or disconnect.
 
-If it is not connected:
-
-1. Gateway healthy? `curl -sS http://127.0.0.1:8811/health`
-2. Token exported in **this** shell, and equal to `.env`?
-3. `oauth` still `false`?
+If it is not connected, or you see **Error POSTing to endpoint: Unauthorized (HTTP 401)**, follow [Fix HTTP 401 Unauthorized](#fix-http-401-unauthorized).
 
 ## 5. Use it from every project (global)
 
@@ -189,12 +185,113 @@ In OpenCode: `/mcps` to view, connect, disconnect, or authenticate. Disconnectin
 
 ---
 
+## Fix HTTP 401 Unauthorized
+
+OpenCode shows:
+
+```text
+MCP server: docker-gateway
+Error POSTing to endpoint: Unauthorized (HTTP 401)
+```
+
+`opencode mcp list` shows `docker-gateway  failed: … Unauthorized (HTTP 401)`.
+
+The gateway is usually **up**. OpenCode is sending a bad `Authorization` header. `/health` does not use auth, so a healthy gateway can still 401 `/mcp`.
+
+### What `{env:NAME}` means
+
+`{env:NAME}` looks up an **environment variable named `NAME`**. It is not “use this string as the token.”
+
+Do not paste the token (or the `.env.example` placeholder) inside `{env:...}`:
+
+```jsonc
+// wrong — looks up a variable named "change-me-to-a-long-random-token"
+"Authorization": "Bearer {env:change-me-to-a-long-random-token}"
+
+// right — looks up MCP_GATEWAY_AUTH_TOKEN in the OpenCode process environment
+"Authorization": "Bearer {env:MCP_GATEWAY_AUTH_TOKEN}"
+```
+
+Keep `"oauth": false`. This gateway is Bearer-only. `/mcps` → Sign in will not fix 401.
+
+### Same token, three places
+
+| Place | Role |
+| --- | --- |
+| `.env` → `MCP_GATEWAY_AUTH_TOKEN=` | Compose injects this into the gateway |
+| `opencode.jsonc` header | Must be `Bearer {env:MCP_GATEWAY_AUTH_TOKEN}` |
+| OpenCode **process** environment | OpenCode does **not** read Compose `.env` |
+
+Generate a token if `.env` still has the example placeholder:
+
+```bash
+openssl rand -hex 32
+```
+
+Put that value in `.env`. If you changed `.env` after Compose was already up:
+
+```bash
+docker compose up -d --force-recreate
+```
+
+Export the **same** value in the shell that starts OpenCode (and persist it in `~/.bashrc` / `~/.zshrc`):
+
+```bash
+export MCP_GATEWAY_AUTH_TOKEN='the-same-token-as-in-.env'
+```
+
+OpenCode’s background service (`opencode serve --service`) keeps its environment from when it started. Config reload does not pick up a new export. After exporting:
+
+```bash
+source ~/.bashrc    # or ~/.zshrc
+opencode service restart
+```
+
+Do not restart the service from an OpenCode agent session; that process is a child of the service.
+
+Also fix `~/.config/opencode/opencode.jsonc` if `docker-gateway` is defined there. A project `opencode.jsonc` with the same server name **replaces the entire server object**.
+
+### Probe with curl
+
+```bash
+export MCP_URL=http://127.0.0.1:8811
+# 200, no auth
+curl -sS -o /dev/null -w "%{http_code}\n" "$MCP_URL/health"
+
+# 401 without Bearer
+curl -sS -o /dev/null -w "%{http_code}\n" -X POST "$MCP_URL/mcp" \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"curl","version":"0"}}}'
+
+# 200 with the same token OpenCode should send
+curl -sS -o /dev/null -w "%{http_code}\n" -X POST "$MCP_URL/mcp" \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "Authorization: Bearer ${MCP_GATEWAY_AUTH_TOKEN}" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"curl","version":"0"}}}'
+```
+
+If health is 200, no-Bearer is 401, and Bearer is 200, the gateway is correct. The remaining bug is OpenCode’s header or process environment.
+
+### Confirm
+
+```sh
+opencode mcp list
+```
+
+You want `docker-gateway  connected`.
+
+Full HTTP walkthrough: [api-testing.md](api-testing.md).
+
 ## Pitfalls
 
 | Issue | Fix |
 | --- | --- |
+| **Error POSTing to endpoint: Unauthorized (HTTP 401)** | [Fix HTTP 401 Unauthorized](#fix-http-401-unauthorized) |
+| `{env:…}` contains the token value, not the variable name | Use `Bearer {env:MCP_GATEWAY_AUTH_TOKEN}` only |
 | OpenCode tries OAuth against this gateway | Keep `"oauth": false` |
-| `{env:MCP_GATEWAY_AUTH_TOKEN}` empty | Export the var in the shell that starts OpenCode; it does not read `.env` |
+| `{env:MCP_GATEWAY_AUTH_TOKEN}` empty | Export the var in the shell that starts OpenCode; it does not read `.env`. Then `opencode service restart` |
 | `docker-gateway` not connected | Compose down, token mismatch, or port not `127.0.0.1:8811` |
 | Duplicate server names | Higher-precedence project config replaces the whole object |
 | Secrets in `opencode.jsonc` | Use `{env:NAME}` only |
@@ -202,5 +299,6 @@ In OpenCode: `/mcps` to view, connect, disconnect, or authenticate. Disconnectin
 ## Next
 
 - [Step-by-step usage](usage.md) — `.env`, Compose, catalog servers
+- [Fix HTTP 401 Unauthorized](#fix-http-401-unauthorized)
 - [Test with curl / HTTP API](api-testing.md)
 - [Test with Postman](postman.md)

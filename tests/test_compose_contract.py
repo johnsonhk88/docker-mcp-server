@@ -41,6 +41,7 @@ class ComposeContractTests(unittest.TestCase):
         self.assertIn("docs/usage.md", text)
         self.assertIn("docs/api-testing.md", text)
         self.assertIn("docs/postman.md", text)
+        self.assertIn("docs/opencode.md#fix-http-401-unauthorized", text)
 
     def test_usage_doc_covers_compose_and_opencode(self) -> None:
         text = (ROOT / "docs/usage.md").read_text(encoding="utf-8")
@@ -68,6 +69,15 @@ class ComposeContractTests(unittest.TestCase):
         self.assertIn("/mcp", collection)
         self.assertIn("Mcp-Session-Id", collection)
         self.assertIn("tools/list", collection)
+
+    def test_opencode_doc_covers_http_401(self) -> None:
+        text = (ROOT / "docs" / "opencode.md").read_text(encoding="utf-8")
+        self.assertIn("## Fix HTTP 401 Unauthorized", text)
+        self.assertIn("Error POSTing to endpoint", text)
+        self.assertIn("opencode service restart", text)
+        self.assertIn("Do not paste the token", text)
+        self.assertIn("Bearer {env:MCP_GATEWAY_AUTH_TOKEN}", text)
+        self.assertIn('"oauth": false', text)
 
     def test_opencode_config_uses_remote_bearer(self) -> None:
         text = (ROOT / "opencode.jsonc").read_text(encoding="utf-8")

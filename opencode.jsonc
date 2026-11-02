@@ -10,6 +10,10 @@
           "Authorization": "Bearer {env:MCP_GATEWAY_AUTH_TOKEN}",
         },
       },
+      "context7": {
+        "type": "remote",
+        "url": "https://mcp.context7.com/mcp"
+      },
     },
   },
 }
