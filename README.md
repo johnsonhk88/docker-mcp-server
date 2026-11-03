@@ -2,7 +2,7 @@
 
 Run Docker catalog MCP servers behind one Streamable HTTP endpoint so OpenCode can call them.
 
-v1 servers: **Postman**, **DuckDuckGo** (search), **Fetch** (page to markdown).
+Gateway servers: **Postman**, **DuckDuckGo** (search), **Fetch** (page to markdown). Optional standalone: **Postman full** (`mcp/postman --full`).
 
 ## Docs
 
@@ -10,7 +10,8 @@ v1 servers: **Postman**, **DuckDuckGo** (search), **Fetch** (page to markdown).
 - [Set up OpenCode](docs/opencode.md) — MCP client config, token export, local vs remote servers
 - [Fix HTTP 401 Unauthorized](docs/opencode.md#fix-http-401-unauthorized) — `docker-gateway` Error POSTing to endpoint
 - [Test with curl / HTTP API](docs/api-testing.md) — health, initialize, `tools/list`, `tools/call`
-- [Test with Postman](docs/postman.md) — import `docs/postman/mcp-gateway.postman_collection.json`
+- [Test the gateway in the Postman app](docs/postman.md) — import `docs/postman/mcp-gateway.postman_collection.json`
+- [Run and test standalone Postman MCP (full)](docs/postman-full.md) — shell setup, stdio tool test, and the `postman-full` OpenCode server
 
 ## Requirements
 
@@ -62,6 +63,34 @@ You want `docker-gateway` **connected**. Keep `oauth: false` — this gateway us
 If you see **Error POSTing to endpoint: Unauthorized (HTTP 401)**, see [Fix HTTP 401 Unauthorized](docs/opencode.md#fix-http-401-unauthorized).
 
 To use it from every project, copy the `mcp.servers.docker-gateway` block into `~/.config/opencode/opencode.jsonc`.
+
+## Standalone Postman full server (optional)
+
+The gateway's Postman server provides the catalog toolset. For the full 100+ tool set, `opencode.jsonc` also defines a local stdio server named `postman-full`.
+
+```bash
+scripts/setup-postman-mcp.sh
+opencode mcp list
+```
+
+`setup-postman-mcp.sh` reads `postman.postman-api-key` from `.env`, pulls `mcp/postman`, and verifies the MCP handshake. You want `postman-full` **connected** in OpenCode. Its tools are prefixed `postman_full_*`; gateway tools are `docker_gateway_*`.
+
+Full guide, tool-call test, and troubleshooting: [Run and test standalone Postman MCP (full)](docs/postman-full.md).
+
+## Test
+
+```bash
+# Gateway health: expect 200
+curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8811/health
+
+# Standalone Postman MCP: expect "OK: Postman MCP --full responded"
+scripts/setup-postman-mcp.sh
+
+# OpenCode connections: expect docker-gateway and postman-full connected
+opencode mcp list
+```
+
+More: [curl/HTTP API](docs/api-testing.md), [Postman app](docs/postman.md), [standalone Postman full](docs/postman-full.md).
 
 ## Add another catalog server
 

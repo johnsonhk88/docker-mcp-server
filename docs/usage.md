@@ -81,7 +81,18 @@ The gateway exposes one MCP endpoint. Behind it:
 
 Ask OpenCode to search the web, fetch a page, or list your Postman workspaces. Tool names appear as `docker_gateway_<tool>` in OpenCode.
 
-## 6. Add another catalog server
+## 6. Optional: standalone Postman full server
+
+The gateway's Postman server covers the catalog toolset. For the full 100+ tool set, the repo also defines a local stdio server named `postman-full`. It coexists with the gateway:
+
+```bash
+scripts/setup-postman-mcp.sh
+opencode mcp list
+```
+
+You want both `docker-gateway` and `postman-full` connected. Tools are prefixed `postman_full_*`. Setup, tool-call test, and troubleshooting: [Run and test standalone Postman MCP (full)](postman-full.md).
+
+## 7. Add another catalog server
 
 1. Find the name on the [Docker MCP Catalog](https://hub.docker.com/mcp/explore).
 2. Append it to `--servers=` in `compose.yaml`, comma-separated:
@@ -96,7 +107,7 @@ Ask OpenCode to search the web, fetch a page, or list your Postman workspaces. T
 
 Crawl4AI is not in the Docker catalog. Do not add it here.
 
-## 7. Stop
+## 8. Stop
 
 ```bash
 docker compose down
@@ -107,3 +118,4 @@ docker compose down
 - [Set up OpenCode](opencode.md)
 - [Test with curl / HTTP API](api-testing.md)
 - [Test with the Postman app](postman.md)
+- [Run and test standalone Postman MCP full](postman-full.md)

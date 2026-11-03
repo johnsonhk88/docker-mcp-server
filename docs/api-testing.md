@@ -2,6 +2,8 @@
 
 The gateway speaks **MCP Streamable HTTP** at `http://127.0.0.1:8811/mcp`. Responses are `text/event-stream` (`event: message` + `data: {jsonrpc...}`).
 
+For the standalone Postman MCP server (`mcp/postman --full`, stdio), see [postman-full.md](postman-full.md).
+
 Set the token once:
 
 ```bash

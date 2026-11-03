@@ -96,6 +96,19 @@ Under default Code Mode they are grouped as `tools.docker_gateway.<tool>(...)`. 
 
 Ask OpenCode to search the web, fetch a page, or list Postman workspaces.
 
+### Standalone Postman full server
+
+The repo also defines `postman-full`, a local stdio server for the full `mcp/postman` toolset. It coexists with the gateway:
+
+```jsonc
+"postman-full": {
+  "type": "local",
+  "command": ["bash", "scripts/run-postman-mcp-full.sh", "--full"]
+}
+```
+
+The wrapper reads `postman.postman-api-key` from `.env`, so OpenCode's background service does not need `POSTMAN_API_KEY` in its environment. Tools are `postman_full_*`. Setup and tests: [Run and test standalone Postman MCP (full)](postman-full.md).
+
 ---
 
 ## Add other MCP servers (OpenCode V2)
@@ -302,3 +315,4 @@ Full HTTP walkthrough: [api-testing.md](api-testing.md).
 - [Fix HTTP 401 Unauthorized](#fix-http-401-unauthorized)
 - [Test with curl / HTTP API](api-testing.md)
 - [Test with Postman](postman.md)
+- [Run and test standalone Postman MCP full](postman-full.md)

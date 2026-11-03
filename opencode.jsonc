@@ -14,6 +14,10 @@
         "type": "remote",
         "url": "https://mcp.context7.com/mcp"
       },
+      "postman-full": {
+        "type": "local",
+        "command": ["bash", "scripts/run-postman-mcp-full.sh", "--full"]
+      },
     },
   },
 }

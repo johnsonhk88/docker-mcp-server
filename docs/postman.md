@@ -1,6 +1,9 @@
-# Test the MCP Gateway in Postman
+# Test the MCP Gateway in the Postman app
 
-This is the **Postman app** talking to the gateway over HTTP. It is not the same as the **Postman MCP catalog server** (that one uses `postman.postman-api-key` to manage Postman Cloud workspaces).
+This is the **Postman desktop app** acting as an MCP client and talking to the gateway over HTTP. It is not the same as:
+
+- the **Postman MCP catalog server** behind the gateway (that one uses `postman.postman-api-key` to manage Postman Cloud workspaces)
+- the standalone **`postman-full`** server, which runs `mcp/postman --full` over stdio ([postman-full.md](postman-full.md))
 
 Keep `oauth: false` on the OpenCode remote config. Postman requests here use Bearer auth only.
 
@@ -43,3 +46,5 @@ Body type is raw JSON. The response is Server-Sent Events (`event: message` then
 ## 5. Optional: same calls without the collection
 
 See [api-testing.md](api-testing.md) for curl.
+
+See also [Run and test the standalone Postman MCP server](postman-full.md).
